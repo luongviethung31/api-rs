@@ -22,7 +22,7 @@ app.config["DEBUG"] = True
 reconstructed_model = keras.models.load_model(
         "./NeuMF_8_[64, 32, 16, 8]_1668402292.h5")
 
-@app.route('/api/v1/resources/books', methods=['POST'])
+@app.route('/api/v1/recommend/books', methods=['POST'])
 def create_task():
     if not request.json :
         abort(400)
@@ -35,13 +35,10 @@ def create_task():
     for i in range(len(bookIds)):
           item = bookIds[i]
           map_item_score[item] = results[i]
-    bookIds.pop()
-      # Evaluate top rank list
-    ranklist = np.array(heapq.nlargest(10, map_item_score, key=map_item_score.get))
-    results = ranklist.flatten()
+    recommendList = np.array(heapq.nlargest(10, map_item_score, key=map_item_score.get))
+    results = recommendList.flatten()
     json_str = json.dumps(results.tolist())
-    print(json_str)
-    
+    #print(json_str)
     return jsonify(json_str), 201
 if __name__ == "__main__":
   app.run(port=6969)
